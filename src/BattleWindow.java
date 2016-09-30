@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class BattleWindow extends JFrame {
+
     String[] fleetSizes = {"20"};
     String[] fieldSizes = {"10x10"};
     static int battleFieldSize = 10;
@@ -34,7 +35,7 @@ public class BattleWindow extends JFrame {
 
     public BattleWindow (){
         this.setSize(640,480);
-
+        this.setLayout(new FlowLayout());
         createSetup(this);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,9 +67,10 @@ public class BattleWindow extends JFrame {
 
                 setup.removeAll();
                 setup.repaint();
-                bw.add(planning);
+
                 createBattleField();
                 createPlanningBoard();
+                bw.add(planning);
                 bw.setVisible(true);
             }
         };
@@ -117,20 +119,19 @@ public class BattleWindow extends JFrame {
 
     public void createBattleField() {
         JPanel battleField = new JPanel();
+        battleField.setPreferredSize(new Dimension(200, 200));
         battleField.setLayout(new GridLayout(battleFieldSize,battleFieldSize));
         battleFieldLocations = new JLabel[battleFieldSize][battleFieldSize];
         //init JLabels
         for (int x=0;x<battleFieldSize;x++){
             for (int y=0;y<battleFieldSize;y++){
                 battleFieldLocations[x][y]= new JLabel();
-            }
-        }
-        //color JLabels
-        for (int x=0;x<battleFieldSize;x++){
-            for (int y=0;y<battleFieldSize;y++){
                 battleFieldLocations[x][y].setForeground(Color.BLUE);
+                battleFieldLocations[x][y].setPreferredSize(new Dimension(20, 20));
+                battleField.add(battleFieldLocations[x][y]);
             }
         }
+
         planning.add(battleField);
         planning.setVisible(true);
         this.repaint();
