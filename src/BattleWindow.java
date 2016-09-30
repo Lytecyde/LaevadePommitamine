@@ -24,9 +24,11 @@ public class BattleWindow extends JFrame {
     JButton ok =new JButton("OK");
     JButton startGame =new JButton("Start game!");
     int counterOk = 0;
-    private int direction = 0;
+    private int direction = -1;
+    private int[] coordinates = {-1,-1};
     private Player player1;
     private Player player2;
+    private Player currentPlayer = player1;
     int shipSize = 0;
     /**********************************
      * Battlefield variables
@@ -70,7 +72,9 @@ public class BattleWindow extends JFrame {
 
                 createBattleField();
                 createPlanningBoard();
+
                 bw.add(planning);
+                bw.pack();
                 bw.setVisible(true);
             }
         };
@@ -125,8 +129,10 @@ public class BattleWindow extends JFrame {
         //init JLabels
         for (int x=0;x<battleFieldSize;x++){
             for (int y=0;y<battleFieldSize;y++){
-                battleFieldLocations[x][y]= new JLabel();
-                battleFieldLocations[x][y].setForeground(Color.BLUE);
+                battleFieldLocations[x][y]= new JLabel("~");
+                battleFieldLocations[x][y].setForeground(Color.cyan);
+                battleFieldLocations[x][y].setBackground(Color.BLUE);
+                battleFieldLocations[x][y].setOpaque(true);
                 battleFieldLocations[x][y].setPreferredSize(new Dimension(20, 20));
                 battleField.add(battleFieldLocations[x][y]);
             }
@@ -154,6 +160,9 @@ public class BattleWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource()== ship4Button){
                     shipSize = 4;
+                    //
+
+
                 }
                 else if (e.getSource() == ship3Button) {
                     shipSize = 3;
@@ -166,7 +175,10 @@ public class BattleWindow extends JFrame {
                 }
             }
         };
-
+        ship1Button.addActionListener(sizeListener);
+        ship2Button.addActionListener(sizeListener);
+        ship3Button.addActionListener(sizeListener);
+        ship4Button.addActionListener(sizeListener);
 
         JButton northButton = new JButton("North");
         JButton eastButton = new JButton("East");
@@ -196,21 +208,52 @@ public class BattleWindow extends JFrame {
 
         JLabel feedback = new JLabel();
         JButton ok = new JButton("OK!");
-
+        JButton reset = new JButton("Reset");
 
         ActionListener okActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //peab võtma info laeva suuruse, suuna ja algpunkti kohta
+                if(shipSize !=0 &&
+                        direction != -1 &&
+                        coordinatesAreSet(coordinates) ){
+                    Ship currentShip = new Ship(shipSize);
 
+                }
+
+            }
+            public boolean coordinatesAreSet(int[] coordinates){
+                return coordinates[0]!=-1 && coordinates[1] !=-1;
+            }
+            public boolean coordinatesAreLegal(int[] coordinates){
                 //peab kontrollima et eelmised laevad ei kattu ja ei tohi ka puutuda
-
                 //peab kontrollima et laev ei lähe niimoodi väljakult välja
+                if(){
+
+                }
+                return false;
             }
         };
         ok.addActionListener(okActionListener);
-        switchboard.setVisible(true);
+        //switchboard.setVisible(true);
+        switchboard.add(ship1);
+        switchboard.add(ship1Button);
+        switchboard.add(ship2);
+        switchboard.add(ship2Button);
+        switchboard.add(ship3);
+        switchboard.add(ship3Button);
+        switchboard.add(ship4);
+        switchboard.add(ship4Button);
+        switchboard.add(northButton);
+        switchboard.add(eastButton);
+        switchboard.add(southButton);
+        switchboard.add(westButton);
+        switchboard.add(ok);
+        switchboard.add(feedback);
+        switchboard.add(reset);
+
         planning.add(switchboard);
+        planning.setVisible(true);
         this.repaint();
     }
 

@@ -7,6 +7,7 @@ public class Ship {
     int hits = 0;
     int battlefieldSize;
     int[][]  coordinates;
+    boolean sailing = false;
     Direction d;
     public Ship(int size){
         this.size = size;
