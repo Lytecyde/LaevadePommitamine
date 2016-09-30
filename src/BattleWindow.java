@@ -6,8 +6,9 @@ import java.awt.event.ActionListener;
 public class BattleWindow extends JFrame {
     String[] fleetSizes = {"20"};
     String[] fieldSizes = {"10x10"};
-    static int battleFieldSize = 0;
+    static int battleFieldSize = 10;
     JPanel setup = new JPanel();
+    JPanel planning = new JPanel();
     JLabel name = new JLabel("Name");
     JTextField nameTextField = new JTextField();
     JLabel fleetSize = new JLabel("Fleet Size");
@@ -23,6 +24,9 @@ public class BattleWindow extends JFrame {
     JButton startGame =new JButton("Start game!");
     int counterOk = 0;
     private int direction = 0;
+    private Player player1;
+    private Player player2;
+    int shipSize = 0;
     /**********************************
      * Battlefield variables
      */
@@ -31,13 +35,13 @@ public class BattleWindow extends JFrame {
     public BattleWindow (){
         this.setSize(640,480);
 
-        createSetup();
+        createSetup(this);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("Battleships");
         this.setVisible(true);
     }
-    public void createSetup(){
+    public void createSetup(BattleWindow bw){
         setup.setLayout(new GridLayout(5,2));
         setup.add(name);
         name.setVisible(false);
@@ -56,6 +60,21 @@ public class BattleWindow extends JFrame {
         gameTypePanel.add(ai);
         gameTypePanel.add(network);
         setup.add(gameTypePanel);
+        ActionListener startActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                setup.removeAll();
+                setup.repaint();
+                bw.add(planning);
+                createBattleField();
+                createPlanningBoard();
+                bw.setVisible(true);
+            }
+        };
+        startGame.addActionListener(startActionListener);
+        startGame.setEnabled(false);
+
         ActionListener okActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -72,13 +91,16 @@ public class BattleWindow extends JFrame {
                     counterOk++;
                 }
                 else if(counterOk == 1 && !nameTextField.getText().equals("")) {
-                    Player player1 = new Player(nameTextField.getText());
+                    player1 = new Player(nameTextField.getText());
                     nameTextField.setText("");
+
                     counterOk++;
                 }
                 else if(counterOk == 2 && !nameTextField.getText().equals("")) {
-                    Player player2 = new Player(nameTextField.getText());
+                    player2 = new Player(nameTextField.getText());
                     nameTextField.setText("");
+                    ok.setEnabled(false);
+                    startGame.setEnabled(true);
                     counterOk++;
                 }
 
@@ -86,22 +108,14 @@ public class BattleWindow extends JFrame {
         };
         ok.addActionListener(okActionListener);
         setup.add(ok);
-
-        ActionListener startActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setup.removeAll();
-                setup.repaint();
-            }
-        };
-        startGame.addActionListener(startActionListener);
         setup.add(startGame);
+
 
 
         this.add(setup);
     }
 
-    public static void createBattleField() {
+    public void createBattleField() {
         JPanel battleField = new JPanel();
         battleField.setLayout(new GridLayout(battleFieldSize,battleFieldSize));
         battleFieldLocations = new JLabel[battleFieldSize][battleFieldSize];
@@ -117,11 +131,15 @@ public class BattleWindow extends JFrame {
                 battleFieldLocations[x][y].setForeground(Color.BLUE);
             }
         }
+        planning.add(battleField);
+        planning.setVisible(true);
+        this.repaint();
     }
 
     public void createPlanningBoard(){
-        JPanel battleField = new JPanel();
-        battleField.setLayout(new GridLayout(7,2));
+
+        JPanel switchboard = new JPanel();
+        switchboard.setLayout(new GridLayout(7,2));
         JLabel ship4  = new JLabel("Battleship");
         JButton ship4Button = new JButton("####");
         JLabel ship3  = new JLabel("Destroyer");
@@ -130,10 +148,25 @@ public class BattleWindow extends JFrame {
         JButton ship2Button = new JButton("##");
         JLabel ship1  = new JLabel("Patrol boat");
         JButton ship1Button = new JButton("#");
+        ActionListener sizeListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource()== ship4Button){
+                    shipSize = 4;
+                }
+                else if (e.getSource() == ship3Button) {
+                    shipSize = 3;
+                }
+                else if (e.getSource()== ship2Button){
+                    shipSize=2;
+                }
+                else if (e.getSource()==ship1Button){
+                    shipSize=1;
+                }
+            }
+        };
 
-/**************************
-        Reedel jätkame 29.09.2016
-*/
+
         JButton northButton = new JButton("North");
         JButton eastButton = new JButton("East");
         JButton southButton = new JButton("South");
@@ -175,6 +208,9 @@ public class BattleWindow extends JFrame {
             }
         };
         ok.addActionListener(okActionListener);
+        switchboard.setVisible(true);
+        planning.add(switchboard);
+        this.repaint();
     }
 
 
