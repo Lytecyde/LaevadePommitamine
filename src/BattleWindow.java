@@ -241,6 +241,7 @@ public class BattleWindow extends JFrame {
                     Ship currentShip = new Ship(shipSize);
                     System.out.println("All data received for sailing a ship:size"
                             + shipSize + "d:"+direction + "x:"+coordinates[0]+"y"+coordinates[1]);
+                    displayShip(shipSize, direction,coordinates);
                 }
 
             }
@@ -281,7 +282,31 @@ public class BattleWindow extends JFrame {
         planning.setVisible(true);
         this.repaint();
     }
-
+    public void displayShip(int size, int direction, int[] coordinates){
+        int shiplocationx = coordinates[0];
+        int shiplocationy = coordinates[1];
+        for(int s = 0; s < size; s++){
+            switch (direction){
+                case 0:
+                    battleFieldLocations[shiplocationx][shiplocationy].setBackground(Color.black);
+                    shiplocationx--;
+                    break;
+                case 1:
+                    battleFieldLocations[shiplocationx][shiplocationy].setBackground(Color.black);
+                    shiplocationy++;
+                    break;
+                case 2:
+                    battleFieldLocations[shiplocationx][shiplocationy].setBackground(Color.black);
+                    shiplocationx++;
+                    break;
+                case 3:
+                    battleFieldLocations[shiplocationx][shiplocationy].setBackground(Color.black);
+                    shiplocationy--;
+                    break;
+            }
+        }
+        planning.repaint();
+    }
 
     public static void setFieldSize(int index){
         switch (index){
