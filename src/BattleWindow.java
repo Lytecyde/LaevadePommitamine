@@ -243,7 +243,13 @@ public class BattleWindow extends JFrame {
                             + shipSize + "d:"+direction + "x:"+coordinates[0]+"y"+coordinates[1]);
                     displayShip(shipSize, direction,coordinates);
                 }
-
+                resetShipData();
+            }
+            public void resetShipData(){
+                shipSize = 0;
+                direction = -1;
+                coordinates[0] = -1;
+                coordinates[1] = -1;
             }
             public boolean coordinatesAreSet(int[] coordinates){
                 return coordinates[0]!=-1 && coordinates[1] !=-1;
