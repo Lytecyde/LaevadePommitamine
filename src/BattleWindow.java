@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class BattleWindow extends JFrame {
 
@@ -10,6 +12,7 @@ public class BattleWindow extends JFrame {
     static int battleFieldSize = 10;
     JPanel setup = new JPanel();
     JPanel planning = new JPanel();
+
     JLabel name = new JLabel("Name");
     JTextField nameTextField = new JTextField();
     JLabel fleetSize = new JLabel("Fleet Size");
@@ -30,6 +33,8 @@ public class BattleWindow extends JFrame {
     private Player player2;
     private Player currentPlayer = player1;
     int shipSize = 0;
+    final private int xCoordinate =0;
+    final private int yCoordinate =1;
     /**********************************
      * Battlefield variables
      */
@@ -126,6 +131,7 @@ public class BattleWindow extends JFrame {
         battleField.setPreferredSize(new Dimension(200, 200));
         battleField.setLayout(new GridLayout(battleFieldSize,battleFieldSize));
         battleFieldLocations = new JLabel[battleFieldSize][battleFieldSize];
+
         //init JLabels
         for (int x=0;x<battleFieldSize;x++){
             for (int y=0;y<battleFieldSize;y++){
@@ -134,9 +140,27 @@ public class BattleWindow extends JFrame {
                 battleFieldLocations[x][y].setBackground(Color.BLUE);
                 battleFieldLocations[x][y].setOpaque(true);
                 battleFieldLocations[x][y].setPreferredSize(new Dimension(20, 20));
+                battleFieldLocations[x][y].addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                        int locationx = -1;
+                        int locationy = -1;
+                        for (int x=0;x<battleFieldSize;x++) {
+                            for (int y = 0; y < battleFieldSize; y++) {
+                                if (e.getSource() == battleFieldLocations[x][y]) {
+                                    locationx = x;
+                                    locationy = y;
+                                }
+                            }
+                        }
+                        coordinates[xCoordinate] = locationx;
+                        coordinates[yCoordinate] = locationy;
+                    }
+                });
                 battleField.add(battleFieldLocations[x][y]);
             }
         }
+
+
 
         planning.add(battleField);
         planning.setVisible(true);
@@ -160,9 +184,6 @@ public class BattleWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource()== ship4Button){
                     shipSize = 4;
-                    //
-
-
                 }
                 else if (e.getSource() == ship3Button) {
                     shipSize = 3;
@@ -218,7 +239,8 @@ public class BattleWindow extends JFrame {
                         direction != -1 &&
                         coordinatesAreSet(coordinates) ){
                     Ship currentShip = new Ship(shipSize);
-
+                    System.out.println("All data received for sailing a ship:size"
+                            + shipSize + "d:"+direction + "x:"+coordinates[0]+"y"+coordinates[1]);
                 }
 
             }
@@ -227,11 +249,14 @@ public class BattleWindow extends JFrame {
             }
             public boolean coordinatesAreLegal(int[] coordinates){
                 //peab kontrollima et eelmised laevad ei kattu ja ei tohi ka puutuda
-                //peab kontrollima et laev ei lähe niimoodi väljakult välja
-                if(){
 
-                }
-                return false;
+                //laevad ei kattu
+                boolean legal = true;
+
+                if(currentPlayer.planningfield[coordinates[xCoordinate]][coordinates[yCoordinate]] ==1)
+                legal = false;
+
+                return legal;
             }
         };
         ok.addActionListener(okActionListener);
