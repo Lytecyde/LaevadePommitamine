@@ -105,6 +105,7 @@ public class BattleWindow extends JFrame {
                     player1 = new Player(nameTextField.getText());
                     nameTextField.setText("");
                     currentPlayer = player1;
+                    setFrameName("Laevadepommitamine: " + currentPlayer.name);
                     counterOk++;
                 }
                 else if(counterOk == 2 && !nameTextField.getText().equals("")) {
@@ -123,6 +124,10 @@ public class BattleWindow extends JFrame {
 
 
         this.add(setup);
+    }
+
+    public void setFrameName(String s){
+        this.setTitle(s);
     }
 
     public void createBattleField() {
@@ -233,40 +238,51 @@ public class BattleWindow extends JFrame {
         ActionListener okActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //peab võtma info laeva suuruse, suuna ja algpunkti kohta
-                if(shipSize !=0 &&
-                        direction != -1 &&
-                        coordinatesAreSet(coordinates) ){
-                    Ship currentShip = new Ship(shipSize);
-                    System.out.println("All data received for sailing a ship:size"
-                            + shipSize + "d:"+direction + "x:"+coordinates[0]+"y"+coordinates[1]);
-                    //
+                //if (mõlemad mängijad on asetanud kõik laevad) algab mäng;
+                if(!(allShipsOnSea(player1) && allShipsOnSea(player2))) {
+                    //võtab info laeva suuruse, suuna ja algpunkti kohta
+                    //TODO: eemaldab need laeva valikud mis on seilanud
+                    if (shipSize != 0 &&
+                            direction != -1 &&
+                            coordinatesAreSet(coordinates)) {
+                        Ship currentShip = new Ship(shipSize);
+                        System.out.println("All data received for sailing a ship:size"
+                                + shipSize + "d:" + direction + "x:" + coordinates[0] + "y" + coordinates[1]);
+                        //
 
-                    if(coordinatesInBounds(coordinates)){
-                        System.out.println("mahub väljakule" +coordinates[0]+"  "+coordinates[1]);
-                        if(coordinatesAreLegal(coordinates)){//kõiki laeva koordinaate ei kontrolli
-                            System.out.println("koordinaadid on sobilikud merele");
-                            currentPlayer.planningfield[coordinates[0]][coordinates[1]] = SeaConstants.SHIP;
-                            if(coordinatesInBounds(new int[]{coordinates[0] - 1,coordinates[1] - 1})) {
-                                currentPlayer.planningfield[coordinates[0] - 1][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
+                        if (coordinatesInBounds(coordinates)) {
+                            System.out.println("mahub väljakule" + coordinates[0] + "  " + coordinates[1]);
+                            if (coordinatesAreLegal(coordinates)) {//kõiki laeva koordinaate ei kontrolli
+                                System.out.println("koordinaadid on sobilikud merele");
+                                currentPlayer.planningfield[coordinates[0]][coordinates[1]] = SeaConstants.SHIP;
+                                if (coordinatesInBounds(new int[]{coordinates[0] - 1, coordinates[1] - 1})) {
+                                    currentPlayer.planningfield[coordinates[0] - 1][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
+                                } else if (coordinatesInBounds(new int[]{coordinates[0] - 1, coordinates[1]})) {
+                                    currentPlayer.planningfield[coordinates[0] - 1][coordinates[1]] = SeaConstants.ADJACENT_TO_SHIP;
+                                } else if (coordinatesInBounds(new int[]{coordinates[0], coordinates[1] - 1})) {
+                                    currentPlayer.planningfield[coordinates[0]][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
+                                } else if (coordinatesInBounds(new int[]{coordinates[0], coordinates[1] - 1})) {
+                                    currentPlayer.planningfield[coordinates[0]][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
+                                }
+                                displayShip(shipSize, direction, coordinates);
+                                /*TODO:playerfleeti tuleb lisada yks ship selle tarvis loome meetodi Fleet klassi
+                                        nimega set()
+                                */
+                                currentShip.sailing = true;
+                                currentPlayer.getPlayerFleet();
                             }
-                            else if(coordinatesInBounds(new int[]{coordinates[0] - 1,coordinates[1]})) {
-                                currentPlayer.planningfield[coordinates[0] - 1][coordinates[1]] = SeaConstants.ADJACENT_TO_SHIP;
-                            }
-                            else if(coordinatesInBounds(new int[]{coordinates[0] ,coordinates[1] - 1})) {
-                                currentPlayer.planningfield[coordinates[0]][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
-                            }
-                            else if(coordinatesInBounds(new int[]{coordinates[0],coordinates[1] - 1})) {
-                                currentPlayer.planningfield[coordinates[0]][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
-                            }
-                            displayShip(shipSize, direction, coordinates);
+                        } else {
+                            feedback.setText("OUT!");
                         }
                     }
-                    else {
-                        feedback.setText("OUT!");
-                    }
+                    resetShipData();
+                }else{
+                    System.out.println("Game begins!");
+                    //Algab Mäng
+                    //uued paneelid kummagi mängija tulemustega
+                    //uus switchboard
                 }
-                resetShipData();
+
             }
             public void resetShipData(){
                 shipSize = 0;
@@ -391,9 +407,24 @@ public class BattleWindow extends JFrame {
 
     }
 
-
-
     public static int getFieldSize(){
         return battleFieldSize;
+    }
+
+    public int countShips(Player currentPlayer){
+
+        return 0;
+    }
+    public boolean allShipsOnSea(Player p){
+        for(Ship s: p.getPlayerFleet().ships){
+            if(s.sailing ==  false){
+                return false;
+            }
+        }
+        return true;
+    }
+    public boolean finishedFleetSetup(){
+
+        return false;
     }
 }
