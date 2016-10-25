@@ -10,7 +10,7 @@ public class Player {
     public void setupPlanningField(){
         for (int x=0;x<battleFieldSize;x++) {
             for (int y = 0; y < battleFieldSize; y++) {
-                planningfield[x][y] = 0;
+                planningfield[x][y] = SeaConstants.SEA;
             }
         }
     }
