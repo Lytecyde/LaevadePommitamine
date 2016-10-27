@@ -35,6 +35,15 @@ public class BattleWindow extends JFrame {
     int shipSize = 0;
     final private int xCoordinate =0;
     final private int yCoordinate =1;
+
+    public JLabel ship4  = new JLabel("Battleship");
+    public JButton ship4Button = new JButton("####");
+    public JLabel ship3  = new JLabel("Destroyer");
+    public JButton ship3Button = new JButton("###");
+    public JLabel ship2  = new JLabel("Miner");
+    public JButton ship2Button = new JButton("##");
+    public JLabel ship1  = new JLabel("Patrol boat");
+    public JButton ship1Button = new JButton("#");
     /**********************************
      * Battlefield variables
      */
@@ -175,14 +184,7 @@ public class BattleWindow extends JFrame {
 
         JPanel switchboard = new JPanel();
         switchboard.setLayout(new GridLayout(8,2));
-        JLabel ship4  = new JLabel("Battleship");
-        JButton ship4Button = new JButton("####");
-        JLabel ship3  = new JLabel("Destroyer");
-        JButton ship3Button = new JButton("###");
-        JLabel ship2  = new JLabel("Miner");
-        JButton ship2Button = new JButton("##");
-        JLabel ship1  = new JLabel("Patrol boat");
-        JButton ship1Button = new JButton("#");
+
         ActionListener sizeListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -281,7 +283,7 @@ public class BattleWindow extends JFrame {
                                 Ship currentShip = new Ship(shipSize, direction, currentShipsCoordinates, 0, isSailing);//hits = 0
                                 resetShipData();
                                 currentPlayer.getPlayerFleet().set(currentShip);
-
+                                showAvailableShipButtons();
                                 currentPlayer.getPlayerFleet().printFleet(); //ERROR: prints all coord values as same!!!
 
                                 currentPlayer.printPlanningField();
@@ -289,6 +291,7 @@ public class BattleWindow extends JFrame {
                         } else {
                             feedback.setText("OUT!");
                         }
+
                     }
 
                 }else{
@@ -463,4 +466,12 @@ public class BattleWindow extends JFrame {
         }
         return direct;
     }
+
+    public void showAvailableShipButtons(){
+        ship1Button.setEnabled(!SeaConstants.noShipsLeft[0]);
+        ship2Button.setEnabled(!SeaConstants.noShipsLeft[1]);
+        ship3Button.setEnabled(!SeaConstants.noShipsLeft[2]);
+        ship3Button.setEnabled(!SeaConstants.noShipsLeft[3]);
+    }
+
 }

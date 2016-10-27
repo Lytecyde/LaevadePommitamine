@@ -51,7 +51,7 @@ public class Fleet {
     võtame linkedlistist välja leitud muutuja ja selle indexi ships linkedlistis
     */
     public int findNonSailingShip(Ship s) {
-        int searchedIndex = -1;
+        int searchedIndex = -1;//NO ships of that size
 
         for (int i = 0; i < ships.size(); i++) {
 
