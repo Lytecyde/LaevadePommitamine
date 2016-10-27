@@ -241,11 +241,11 @@ public class BattleWindow extends JFrame {
                 //if (mõlemad mängijad on asetanud kõik laevad) algab mäng;
                 if(!(allShipsOnSea(player1) && allShipsOnSea(player2))) {
                     //võtab info laeva suuruse, suuna ja algpunkti kohta
-                    //TODO: eemaldab need laeva valikud mis on seilanud
+
                     if (shipSize != 0 &&
                             direction != -1 &&
                             coordinatesAreSet(coordinates)) {
-                        Ship currentShip = new Ship(shipSize);
+
                         System.out.println("All data received for sailing a ship:size"
                                 + shipSize + "d:" + direction + "x:" + coordinates[0] + "y" + coordinates[1]);
                         //
@@ -264,11 +264,14 @@ public class BattleWindow extends JFrame {
                                 } else if (coordinatesInBounds(new int[]{coordinates[0], coordinates[1] - 1})) {
                                     currentPlayer.planningfield[coordinates[0]][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
                                 }
-                                displayShip(shipSize, direction, coordinates);
-                                /*TODO:playerfleeti tuleb lisada yks ship selle tarvis loome meetodi Fleet klassi
-                                        nimega set()
-                                */
-                                currentShip.sailing = true;
+                                displayShip(shipSize, direction, coordinates);//ERROR does not display sometimes
+                                boolean isSailing = true;
+                                Ship currentShip = new Ship(shipSize, direction, coordinates, 0, isSailing);//hits = 0
+
+                                currentPlayer.getPlayerFleet().set(currentShip);
+
+                                currentPlayer.getPlayerFleet().printFleet(); //ERROR: prints all coord values as same!!!
+
                                 currentPlayer.getPlayerFleet();
                             }
                         } else {

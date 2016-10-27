@@ -6,34 +6,26 @@ import java.util.Objects;
  */
 public class Fleet {
     LinkedList<Ship> ships = new LinkedList<Ship>();
-    LinkedList<Ship> ships1 = new LinkedList<Ship>();
-    LinkedList<Ship> ships2 = new LinkedList<Ship>();
-    LinkedList<Ship> ships3 = new LinkedList<Ship>();
-    LinkedList<Ship> ships4 = new LinkedList<Ship>();
+
 
 
     public Fleet(){
-        ships1.add(new Ship(1));
-        ships1.add(new Ship(1));
-        ships1.add(new Ship(1));
-        ships1.add(new Ship(1));
+        ships.add(new Ship(1));
+        ships.add(new Ship(1));
+        ships.add(new Ship(1));
+        ships.add(new Ship(1));
 
-        ships2.add(new Ship(2));
-        ships2.add(new Ship(2));
-        ships2.add(new Ship(2));
+        ships.add(new Ship(2));
+        ships.add(new Ship(2));
+        ships.add(new Ship(2));
 
-        ships3.add(new Ship(3));
-        ships3.add(new Ship(3));
+        ships.add(new Ship(3));
+        ships.add(new Ship(3));
 
-        ships4.add(new Ship(4));
-        group();
+        ships.add(new Ship(4));
+
     }
-    public void group(){
-        ships.addAll(ships1);
-        ships.addAll(ships2);
-        ships.addAll(ships3);
-        ships.addAll(ships4);
-    }
+
     private void add(Ship s){
         ships.add(s);
     }
@@ -44,60 +36,56 @@ public class Fleet {
         //kontrollime suurust
         int size = s.size;
         Ship thisShip ;
-        int countShipsOfSize = 0;
-        switch (size) {
-            case 4:
-                countShipsOfSize = 1;
-
-                for(int i = 0; i < countShipsOfSize;i++) {
-                    if (ships4.get(i).sailing == false) {
-                        thisShip = ships4.get(i);
-                        thisShip.sailing = s.sailing;
-                        thisShip.battlefieldSize = s.battlefieldSize;
-                        thisShip.coordinates = s.coordinates;
-                        thisShip.d = s.d;
-                        thisShip.heading = s.heading;
-                        thisShip.hits = s.hits;
-                    }
-                }
-
-                break;
-            case 3:
-                countShipsOfSize =2;
-                for(int i = 0; i < countShipsOfSize;i++) {
-                    if (ships3.get(i).sailing == false) {
-
-                    }
-                }
-                break;
-            case 2:
-                countShipsOfSize =3;
-                for(int i = 0; i < countShipsOfSize;i++) {
-                    if (ships2.get(i).sailing == false) {
-
-                    }
-                }
-                break;
-            case 1:
-                countShipsOfSize =4;
-                for(int i = 0; i < countShipsOfSize;i++) {
-                    if (ships1.get(i).sailing == false) {
-
-                    }
-                }
-                break;
-        }
-        Ship nextFreeShip;
-
-
+        findNonSailingShip(s);
         //kontrollime kas seilab siinses laevastikus või võtame järgmise laeva
+    }
+    /*otsime mitteseilava laeva antud suurusega asukoha linkedlistis ships
+    võtame linkedlistist välja leitud muutuja ja selle indexi ships linkedlistis
+    */
+    public void findNonSailingShip(Ship s){
+        for(int i = 0; i < ships.size();i++) {
+            if (ships.get(i).sailing == false && ships.get(i).size ==s.size) {
+                ships.remove(i);
+                ships.add(i, s);
+                break;
+            }
+        }
+    }
+    //seame uute väärtustega ja lisame samale kohale
+    public Ship setShipValues(Ship s, int i){
+        Ship thisShip = new Ship(i);
+        thisShip = ships.get(i);
+        thisShip.sailing = s.sailing;
+        thisShip.battlefieldSize = s.battlefieldSize;
+        thisShip.coordinates = s.coordinates;
+        thisShip.d = s.d;
+        thisShip.heading = s.heading;
+        thisShip.hits = s.hits;
+
+        return thisShip;
+    }
+
+    public int findShipsBySize(int size){
+        int count =0;
+        for (int i =0; i < ships.size();i++){
+            if(ships.get(i).size == size)count++;
+        }
+        return count;
     }
 
     public int totalPoints(){
         //TODO adjust this function for other fleetsizes !
-        return ships1.size()*4 + ships2.size()*3 + ships3.size()*2 + ships4.size()*1;
+        return findShipsBySize(1)*4 + findShipsBySize(2)*3 + findShipsBySize(3)*2 + findShipsBySize(4)*1;
     }
     public int size(){
         return ships.size();
+    }
+    public void printFleet(){
+        System.out.println("Laevastik on:");
+        int i = 0;
+        for(Ship s : this.ships){
+            System.out.println("Laev"+ i +" size:"+s.size+ " direction"+ s.heading +" coord"+s.coordinates[0]+"  "+s.coordinates[1]+ " hits" +s.hits
+                    +" sailing" + s.sailing);
+        }
     }
 }
