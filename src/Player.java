@@ -26,5 +26,12 @@ public class Player {
         return playerFleet;
     }
 
-
+    public void printPlanningField(){
+        for (int x=0;x<battleFieldSize;x++) {
+            for (int y = 0; y < battleFieldSize; y++) {
+                System.out.print(planningfield[x][y]);
+            }
+            System.out.println();
+        }
+    }
 }

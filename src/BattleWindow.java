@@ -254,31 +254,43 @@ public class BattleWindow extends JFrame {
                             System.out.println("mahub väljakule" + coordinates[0] + "  " + coordinates[1]);
                             if (coordinatesAreLegal(coordinates)) {//kõiki laeva koordinaate ei kontrolli
                                 System.out.println("koordinaadid on sobilikud merele");
-                                currentPlayer.planningfield[coordinates[0]][coordinates[1]] = SeaConstants.SHIP;
-                                if (coordinatesInBounds(new int[]{coordinates[0] - 1, coordinates[1] - 1})) {
-                                    currentPlayer.planningfield[coordinates[0] - 1][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
-                                } else if (coordinatesInBounds(new int[]{coordinates[0] - 1, coordinates[1]})) {
-                                    currentPlayer.planningfield[coordinates[0] - 1][coordinates[1]] = SeaConstants.ADJACENT_TO_SHIP;
-                                } else if (coordinatesInBounds(new int[]{coordinates[0], coordinates[1] - 1})) {
-                                    currentPlayer.planningfield[coordinates[0]][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
-                                } else if (coordinatesInBounds(new int[]{coordinates[0], coordinates[1] - 1})) {
-                                    currentPlayer.planningfield[coordinates[0]][coordinates[1] - 1] = SeaConstants.ADJACENT_TO_SHIP;
+                                //fillPlanningFiled()
+
+                                for(int d = 0;d < shipSize;d++) {
+                                    int[] direct = directionsForAdjency(direction);
+                                    int mx = (d*direct[1])+coordinates[0] - 1;
+                                    int my = (d*direct[0])+coordinates[1] - 1;
+                                    for (int x = mx; x < mx + 3 ; x++) {
+                                        for (int y = my; y < my + 3; y++) {
+                                            if (coordinatesInBounds(new int[]{x, y})) {
+                                                currentPlayer.planningfield[x][y] = SeaConstants.ADJACENT_TO_SHIP;
+                                            }
+                                        }
+                                    }
                                 }
+                                currentPlayer.planningfield[coordinates[0]][coordinates[1]] = SeaConstants.SHIP;
+
+
+//                                if (coordinatesInBounds(new int[]{coordinates[0] - 1, coordinates[1]})) {
+//                                    currentPlayer.planningfield[coordinates[0] - 1][coordinates[1]] = SeaConstants.ADJACENT_TO_SHIP;
+//                                }
+
                                 displayShip(shipSize, direction, coordinates);//ERROR does not display sometimes
                                 boolean isSailing = true;
-                                Ship currentShip = new Ship(shipSize, direction, coordinates, 0, isSailing);//hits = 0
-
+                                int[] currentShipsCoordinates = {coordinates[0] , coordinates[1]};
+                                Ship currentShip = new Ship(shipSize, direction, currentShipsCoordinates, 0, isSailing);//hits = 0
+                                resetShipData();
                                 currentPlayer.getPlayerFleet().set(currentShip);
 
                                 currentPlayer.getPlayerFleet().printFleet(); //ERROR: prints all coord values as same!!!
 
-                                currentPlayer.getPlayerFleet();
+                                currentPlayer.printPlanningField();
                             }
                         } else {
                             feedback.setText("OUT!");
                         }
                     }
-                    resetShipData();
+
                 }else{
                     System.out.println("Game begins!");
                     //Algab Mäng
@@ -312,8 +324,9 @@ public class BattleWindow extends JFrame {
             }
             public boolean coordinatesInBounds(int[] coordinates){
                 boolean inBounds = false;
-                if(coordinates[0] >0 || coordinates[0] < battleFieldSize){
-                    if(coordinates[1] > 0 || coordinates[1] < battleFieldSize )inBounds= true;
+                if((coordinates[0] >=0 )&& (coordinates[0] < battleFieldSize)){
+                    if((coordinates[1] >= 0 )&& (coordinates[1] < battleFieldSize) )inBounds= true;
+
                 }
                 else {
                     inBounds = false;
@@ -348,7 +361,7 @@ public class BattleWindow extends JFrame {
         int shiplocationy = coordinates[1];
         boolean shipFits = false;
         //all ship parts fit on the battlefield
-
+        //TODO refactor: tõsta switch
         switch (direction) {
             case 0://north
                 if(shiplocationx - size >=0)shipFits =true;
@@ -360,7 +373,7 @@ public class BattleWindow extends JFrame {
                 break;
             case 2://south
 
-                if(shiplocationx + size >=battleFieldSize)shipFits =true;
+                if(shiplocationx + size < battleFieldSize)shipFits =true;
                 break;
             case 3://west
 
@@ -429,5 +442,25 @@ public class BattleWindow extends JFrame {
     public boolean finishedFleetSetup(){
 
         return false;
+    }
+    public int[] directionsForAdjency(int direction){
+        int[] direct = new int[2];
+        if (direction == 0){// north
+            direct[0] =0; //x
+            direct[1] =-1; //y
+        }
+        else if (direction == 1){ //east
+            direct[0] =1;
+            direct[1] =0;
+        }
+        else if (direction == 2){ //south
+            direct[0] =0;
+            direct[1] =+1;
+        }
+        else if (direction == 3){//west
+            direct[0] =-1;
+            direct[1] =0;
+        }
+        return direct;
     }
 }
