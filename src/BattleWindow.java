@@ -12,7 +12,7 @@ public class BattleWindow extends JFrame {
     static int battleFieldSize = 10;
     JPanel setup = new JPanel();
     JPanel planning = new JPanel();
-
+    JPanel battleField = new JPanel();
     JLabel name = new JLabel("Name");
     JTextField nameTextField = new JTextField();
     JLabel fleetSize = new JLabel("Fleet Size");
@@ -36,6 +36,7 @@ public class BattleWindow extends JFrame {
     final private int xCoordinate =0;
     final private int yCoordinate =1;
 
+    public JButton fill = new JButton("Fill");
     public JLabel ship4  = new JLabel("Battleship");
     public JButton ship4Button = new JButton("####");
     public JLabel ship3  = new JLabel("Destroyer");
@@ -140,7 +141,7 @@ public class BattleWindow extends JFrame {
     }
 
     public void createBattleField() {
-        JPanel battleField = new JPanel();
+
         battleField.setPreferredSize(new Dimension(200, 200));
         battleField.setLayout(new GridLayout(battleFieldSize,battleFieldSize));
         battleFieldLocations = new JLabel[battleFieldSize][battleFieldSize];
@@ -173,11 +174,12 @@ public class BattleWindow extends JFrame {
             }
         }
 
-
-
         planning.add(battleField);
         planning.setVisible(true);
+        planning.revalidate();
+        this.add(planning);
         this.repaint();
+
     }
 
     public void createPlanningBoard(){
@@ -237,6 +239,7 @@ public class BattleWindow extends JFrame {
         JButton ok = new JButton("OK!");
         JButton reset = new JButton("Reset");
 
+
         ActionListener okActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -270,7 +273,7 @@ public class BattleWindow extends JFrame {
                                         }
                                     }
                                 }
-                                //TODO: kõik SeaConstants.SHIP välja kirjutada
+
                                 for(int d = 0; d<shipSize;d++){
                                     int mx = (d*direct[1])+coordinates[0];
                                     int my = (d*direct[0])+coordinates[1];
@@ -283,13 +286,7 @@ public class BattleWindow extends JFrame {
                                     }
                                 }
 
-
-
-//                                if (coordinatesInBounds(new int[]{coordinates[0] - 1, coordinates[1]})) {
-//                                    currentPlayer.planningfield[coordinates[0] - 1][coordinates[1]] = SeaConstants.ADJACENT_TO_SHIP;
-//                                }
-
-                                displayShip(shipSize, direction, coordinates);//ERROR does not display sometimes
+                                displayShips();
                                 boolean isSailing = true;
                                 int[] currentShipsCoordinates = {coordinates[0] , coordinates[1]};
                                 Ship currentShip = new Ship(shipSize, direction, currentShipsCoordinates, 0, isSailing);//hits = 0
@@ -307,12 +304,17 @@ public class BattleWindow extends JFrame {
                     }
 
                 }else{
+                    /////////////////////////////////////////////////////////////////////////
                     //changes players
+                    ////////////////////////////////////////////////////////////////////////
                     if(currentPlayer == player1){
                         currentPlayer = player2;
                         setFrameName("Laevadepommitamine: " + currentPlayer.name);
                         //reset shipbuttons
-
+                        resetShipButtons();
+                        battleField.removeAll();
+                        createBattleField();
+                        planning.setVisible(true);
                     }else{
                         System.out.println("Let the games begin!");
                     }
@@ -357,6 +359,19 @@ public class BattleWindow extends JFrame {
         };
         ok.addActionListener(okActionListener);
         //switchboard.setVisible(true);
+        ActionListener fillListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentPlayer.createPlanningField();
+                displayShips();
+                //set all ships to sail automatically
+                for (int i = 0; i < currentPlayer.getPlayerFleet().ships.size(); i++) {
+                    currentPlayer.getPlayerFleet().ships.get(i).sailing = true;
+                }
+
+            }
+        };
+        fill.addActionListener(fillListener);
         switchboard.add(ship1);
         switchboard.add(ship1Button);
         switchboard.add(ship2);
@@ -372,64 +387,18 @@ public class BattleWindow extends JFrame {
         switchboard.add(ok);
         switchboard.add(feedback);
         switchboard.add(reset);
-
+        switchboard.add(fill);
         planning.add(switchboard);
         planning.setVisible(true);
         this.repaint();
     }
-    public void displayShip(int size, int direction, int[] coordinates){
-        int shiplocationx = coordinates[0];
-        int shiplocationy = coordinates[1];
-        boolean shipFits = false;
-        //all ship parts fit on the battlefield
-        //TODO refactor: tõsta switch
-        switch (direction) {
-            case 0://north
-                if(shiplocationx+1 - size >=0)shipFits =true;
+    public void displayShips(){
 
-                break;
-            case 1://east
-
-                if(shiplocationy-1 + size < battleFieldSize)shipFits =true;
-                break;
-            case 2://south
-
-                if(shiplocationx-1 + size < battleFieldSize)shipFits =true;
-                break;
-            case 3://west
-
-                if(shiplocationy +1+ size >=0)shipFits =true;
-                break;
-
-        }
-
-        if(shipFits) {
-            for (int s = 0; s < size; s++) {
-                switch (direction) {
-                    case 0:
-
-                        battleFieldLocations[shiplocationx][shiplocationy].setBackground(Color.black);
-                        shiplocationx--;
-                        break;
-                    case 1:
-                        battleFieldLocations[shiplocationx][shiplocationy].setBackground(Color.black);
-                        shiplocationy++;
-                        break;
-                    case 2:
-                        battleFieldLocations[shiplocationx][shiplocationy].setBackground(Color.black);
-                        shiplocationx++;
-                        break;
-                    case 3:
-                        battleFieldLocations[shiplocationx][shiplocationy].setBackground(Color.black);
-                        shiplocationy--;
-                        break;
-                }
+        for(int x = 0;x<battleFieldSize;x++){
+            for (int y = 0; y < battleFieldSize; y++) {
+                if(currentPlayer.planningfield[x][y] == SeaConstants.SHIP)
+                battleFieldLocations[x][y].setBackground(Color.black);
             }
-        }
-        else{
-            //unpaintable ship
-            System.out.println("unpaintable ship");
-
         }
         planning.repaint();
     }
@@ -482,6 +451,9 @@ public class BattleWindow extends JFrame {
             direct[0] =-1;
             direct[1] =0;
         }
+        if(direction ==-1){
+            System.out.println("KARJUN sest suund direction pole määratud!");
+        }
         return direct;
     }
 
@@ -492,6 +464,12 @@ public class BattleWindow extends JFrame {
         ship4Button.setEnabled(!Fleet.noShipsLeft[3]);
     }
 
-    
+    public void resetShipButtons(){
+        ship1Button.setEnabled(true);
+        ship2Button.setEnabled(true);
+        ship3Button.setEnabled(true);
+        ship4Button.setEnabled(true);
+
+    }
 
 }

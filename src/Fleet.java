@@ -4,6 +4,7 @@ import java.util.LinkedList;
  * Created by mik.seljamaa on 29.09.2016.
  */
 public class Fleet {
+                    //TODO all false muidu true ajutiselt
     static public boolean[] noShipsLeft = {false, false, false, false}; //sizes 1,2,3,4
     LinkedList<Ship> ships = new LinkedList<Ship>();
 
