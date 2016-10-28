@@ -241,7 +241,7 @@ public class BattleWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //if (mõlemad mängijad on asetanud kõik laevad) algab mäng;
-                if(!(allShipsOnSea(player1) && allShipsOnSea(player2))) {
+                if(!(allShipsOnSea(currentPlayer))) {
                     //võtab info laeva suuruse, suuna ja algpunkti kohta
 
                     if (shipSize != 0 &&
@@ -256,10 +256,10 @@ public class BattleWindow extends JFrame {
                             System.out.println("mahub väljakule" + coordinates[0] + "  " + coordinates[1]);
                             if (coordinatesAreLegal(coordinates)) {//kõiki laeva koordinaate ei kontrolli
                                 System.out.println("koordinaadid on sobilikud merele");
-                                //fillPlanningFiled()
-
+                                //fillPlanningField()
+                                int[] direct = directionsForAdjency(direction);
                                 for(int d = 0;d < shipSize;d++) {
-                                    int[] direct = directionsForAdjency(direction);
+
                                     int mx = (d*direct[1])+coordinates[0] - 1;
                                     int my = (d*direct[0])+coordinates[1] - 1;
                                     for (int x = mx; x < mx + 3 ; x++) {
@@ -270,7 +270,19 @@ public class BattleWindow extends JFrame {
                                         }
                                     }
                                 }
-                                currentPlayer.planningfield[coordinates[0]][coordinates[1]] = SeaConstants.SHIP;
+                                //TODO: kõik SeaConstants.SHIP välja kirjutada
+                                for(int d = 0; d<shipSize;d++){
+                                    int mx = (d*direct[1])+coordinates[0];
+                                    int my = (d*direct[0])+coordinates[1];
+                                    for (int x = mx; x < mx + 1 ; x++) {
+                                        for (int y = my; y < my + 1; y++) {
+                                            if (coordinatesInBounds(new int[]{x, y})) {
+                                                currentPlayer.planningfield[x][y] = SeaConstants.SHIP;
+                                            }
+                                        }
+                                    }
+                                }
+
 
 
 //                                if (coordinatesInBounds(new int[]{coordinates[0] - 1, coordinates[1]})) {
@@ -295,10 +307,16 @@ public class BattleWindow extends JFrame {
                     }
 
                 }else{
-                    System.out.println("Game begins!");
-                    //Algab Mäng
-                    //uued paneelid kummagi mängija tulemustega
-                    //uus switchboard
+                    //changes players
+                    if(currentPlayer == player1){
+                        currentPlayer = player2;
+                        setFrameName("Laevadepommitamine: " + currentPlayer.name);
+                        //reset shipbuttons
+
+                    }else{
+                        System.out.println("Let the games begin!");
+                    }
+
                 }
 
             }
@@ -367,20 +385,20 @@ public class BattleWindow extends JFrame {
         //TODO refactor: tõsta switch
         switch (direction) {
             case 0://north
-                if(shiplocationx - size >=0)shipFits =true;
+                if(shiplocationx+1 - size >=0)shipFits =true;
 
                 break;
             case 1://east
 
-                if(shiplocationy + size < battleFieldSize)shipFits =true;
+                if(shiplocationy-1 + size < battleFieldSize)shipFits =true;
                 break;
             case 2://south
 
-                if(shiplocationx + size < battleFieldSize)shipFits =true;
+                if(shiplocationx-1 + size < battleFieldSize)shipFits =true;
                 break;
             case 3://west
 
-                if(shiplocationy + size >=0)shipFits =true;
+                if(shiplocationy +1+ size >=0)shipFits =true;
                 break;
 
         }
@@ -468,10 +486,12 @@ public class BattleWindow extends JFrame {
     }
 
     public void showAvailableShipButtons(){
-        ship1Button.setEnabled(!SeaConstants.noShipsLeft[0]);
-        ship2Button.setEnabled(!SeaConstants.noShipsLeft[1]);
-        ship3Button.setEnabled(!SeaConstants.noShipsLeft[2]);
-        ship3Button.setEnabled(!SeaConstants.noShipsLeft[3]);
+        ship1Button.setEnabled(!Fleet.noShipsLeft[0]);
+        ship2Button.setEnabled(!Fleet.noShipsLeft[1]);
+        ship3Button.setEnabled(!Fleet.noShipsLeft[2]);
+        ship4Button.setEnabled(!Fleet.noShipsLeft[3]);
     }
+
+    
 
 }

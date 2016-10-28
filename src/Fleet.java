@@ -1,10 +1,10 @@
 import java.util.LinkedList;
-import java.util.Objects;
 
 /**
  * Created by mik.seljamaa on 29.09.2016.
  */
 public class Fleet {
+    static public boolean[] noShipsLeft = {false, false, false, false}; //sizes 1,2,3,4
     LinkedList<Ship> ships = new LinkedList<Ship>();
 
 
@@ -39,7 +39,7 @@ public class Fleet {
 
         if (index == -1) {
             System.out.println("Ei ole laevu selles suuruses enam");
-            SeaConstants.noShipsLeft[s.size - 1] = true;
+            noShipsLeft[s.size - 1] = true;
         } else {
             ships.remove(index);
             ships.add(index, s);
@@ -57,11 +57,14 @@ public class Fleet {
 
             if (ships.get(i).sailing == false && ships.get(i).size == s.size) {
                 searchedIndex = i;
+                if(isLongestShip(s.size)){
+                    noShipsLeft[s.size-1] = true;
+                }
                 if(i+1 < ships.size()){
                     System.out.println("MSG1 : ei ole viimane laev" );
-                    if (ships.get(i + 1).size == s.size){
+                    if (ships.get(i + 1).size != s.size ){
                         System.out.println("MSG2 : viimane laev on märgitud seilama");
-                        SeaConstants.noShipsLeft[s.size] = true;
+                        noShipsLeft[s.size-1] = true;
                     }
                     else{}
                 }else{}
@@ -70,6 +73,12 @@ public class Fleet {
         }
 
         return searchedIndex;
+    }
+
+    private boolean isLongestShip(int s) {
+        boolean longest = false;
+        if (s == SeaConstants.longestShip)longest = true;
+        return longest;
     }
 
     //seame uute väärtustega ja lisame samale kohale
