@@ -241,6 +241,7 @@ public class BattleWindow extends JFrame {
 
 
         ActionListener okActionListener = new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 //if (mõlemad mängijad on asetanud kõik laevad) algab mäng;
@@ -255,41 +256,78 @@ public class BattleWindow extends JFrame {
                                 + shipSize + "d:" + direction + "x:" + coordinates[0] + "y" + coordinates[1]);
                         //
 
+                        int[] direct = directionsForAdjency(direction);
                         if (coordinatesInBounds(coordinates)) {
                             System.out.println("mahub väljakule" + coordinates[0] + "  " + coordinates[1]);
                             if (coordinatesAreLegal(coordinates)) {//kõiki laeva koordinaate ei kontrolli
-                                System.out.println("koordinaadid on sobilikud merele");
+                                System.out.println("alg koordinaadid on sobilikud merele");
                                 //fillPlanningField()
-                                int[] direct = directionsForAdjency(direction);
+                                boolean[] allPartsFit = new boolean[shipSize];
+                                boolean readyToSail = false;
                                 for(int d = 0;d < shipSize;d++) {
 
                                     int mx = (d*direct[1])+coordinates[0] - 1;
                                     int my = (d*direct[0])+coordinates[1] - 1;
+                                    boolean breakout = false;
                                     for (int x = mx; x < mx + 3 ; x++) {
                                         for (int y = my; y < my + 3; y++) {
                                             if (coordinatesInBounds(new int[]{x, y})) {
-                                                currentPlayer.planningfield[x][y] = SeaConstants.ADJACENT_TO_SHIP;
+                                                allPartsFit[d] = true;
+
+                                            }
+                                            else{
+                                                System.out.println("ei sobi merele!");
+                                                allPartsFit[d] = false;
+                                                breakout = true;
+                                                break;
+                                            }
+
+                                        }
+                                        if(breakout) break;
+                                    }
+                                }
+                                for (boolean b:allPartsFit) {
+                                    if (!b) readyToSail = false;
+
+                                    else {
+                                        readyToSail = true;
+                                    }
+                                }
+                                if(readyToSail) {
+                                    for (int d = 0; d < shipSize; d++) {
+                                        int mx = (d * direct[1]) + coordinates[0];
+                                        int my = (d * direct[0]) + coordinates[1];
+                                        for (int x = mx; x < mx + 1; x++) {
+                                            for (int y = my; y < my + 1; y++) {
+                                                if (coordinatesInBounds(new int[]{x, y}) &&
+                                                        coordinatesAreLegal(new int[]{x, y})) {
+                                                    currentPlayer.planningfield[x][y] = SeaConstants.ADJACENT_TO_SHIP;
+                                                }
+                                                else{
+                                                    System.out.println("karjub ei joonista 2 planningfieldi");
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    for (int d = 0; d < shipSize; d++) {
+                                        int mx = (d * direct[1]) + coordinates[0];
+                                        int my = (d * direct[0]) + coordinates[1];
+                                        for (int x = mx; x < mx + 1; x++) {
+                                            for (int y = my; y < my + 1; y++) {
+                                                if (coordinatesInBounds(new int[]{x, y}) &&
+                                                        coordinatesAreLegal(new int[]{x, y})) {
+                                                    currentPlayer.planningfield[x][y] = SeaConstants.SHIP;
+                                                }
                                             }
                                         }
                                     }
                                 }
-
-                                for(int d = 0; d<shipSize;d++){
-                                    int mx = (d*direct[1])+coordinates[0];
-                                    int my = (d*direct[0])+coordinates[1];
-                                    for (int x = mx; x < mx + 1 ; x++) {
-                                        for (int y = my; y < my + 1; y++) {
-                                            if (coordinatesInBounds(new int[]{x, y})) {
-                                                currentPlayer.planningfield[x][y] = SeaConstants.SHIP;
-                                            }
-                                        }
-                                    }
-                                }
-
                                 displayShips();
                                 boolean isSailing = true;
                                 int[] currentShipsCoordinates = {coordinates[0] , coordinates[1]};
-                                Ship currentShip = new Ship(shipSize, direction, currentShipsCoordinates, 0, isSailing);//hits = 0
+                                //hits = 0
+                                Ship currentShip = new Ship(shipSize, direction, currentShipsCoordinates, 0, isSailing);
                                 resetShipData();
                                 currentPlayer.getPlayerFleet().set(currentShip);
                                 showAvailableShipButtons();
@@ -317,6 +355,11 @@ public class BattleWindow extends JFrame {
                         planning.setVisible(true);
                     }else{
                         System.out.println("Let the games begin!");
+                        remove(planning);
+                        remove(switchboard);
+                        revalidate();
+                        repaint();
+
                     }
 
                 }

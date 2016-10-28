@@ -7,6 +7,7 @@ public class Ship {
     int hits = 0;
     int battlefieldSize;
     int[]  coordinates;
+    int[][] allCoordinates;
     int index =  -1;
     boolean sailing = false;
     Direction d;
@@ -24,6 +25,7 @@ public class Ship {
         this.size = size;
         this.heading =  direction;
         this.coordinates = coordinates;
+        this.allCoordinates = new int[2][size];
         this.hits = hits;
         this.sailing = sailing;
     }

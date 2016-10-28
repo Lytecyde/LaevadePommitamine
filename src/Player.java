@@ -3,7 +3,7 @@
  */
 public class Player {
     public String name = "";
-    private Fleet playerFleet = new Fleet();
+    private Fleet playerFleet;
     private int battleFieldSize = BattleWindow.getFieldSize();
     public int[][] planningfield = new int[battleFieldSize][battleFieldSize];
 
@@ -58,6 +58,7 @@ public class Player {
     public Player(String name) {
         this.name = name;
         setupPlanningField();
+        playerFleet = new Fleet();
     }
 
     public Fleet getPlayerFleet() {

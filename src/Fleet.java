@@ -6,10 +6,12 @@ import java.util.LinkedList;
 public class Fleet {
                     //TODO all false muidu true ajutiselt
     static public boolean[] noShipsLeft = {false, false, false, false}; //sizes 1,2,3,4
-    LinkedList<Ship> ships = new LinkedList<Ship>();
+    LinkedList<Ship> ships;
 
 
     public Fleet() {
+        ships = new LinkedList<>();
+        //vaike versioon 20 punktiga
         ships.add(new Ship(1));
         ships.add(new Ship(1));
         ships.add(new Ship(1));
