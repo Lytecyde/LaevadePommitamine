@@ -286,7 +286,7 @@ public class BattleWindow extends JFrame {
 
                     int[] direct = directionsForAdjency(direction);
                     if (coordinatesInBounds(coordinates)) {
-                        System.out.println("alg koordinaadid on sobilikud merele");
+                        System.out.println("Algkoordinaadid on sobilikud merele");
                         if (allShipCoordinatesInBounds(coordinates, direct)) {
                             System.out.println("Terve laev mahub väljakule");
                             if (allShipCoordinatesLegal(coordinates, direct)) {
@@ -305,29 +305,6 @@ public class BattleWindow extends JFrame {
                                 currentPlayer.printPlanningField();
                             }
                         }
-                        /*System.out.println("mahub väljakule" + coordinates[0] + "  " + coordinates[1]);
-                        if (coordinatesAreLegal(coordinates)) {//kõiki laeva koordinaate ei kontrolli
-
-
-                            boolean[] allPartsFit = new boolean[shipSize];
-
-                            defineAllPartsFit(direct, allPartsFit);
-                            boolean readyToSail = isReadyToSail(allPartsFit);
-                            if(readyToSail) {
-                                drawAdjacentToShipMap(direct);
-                                drawShipMap(direct);
-                            }
-                            displayShips();
-                            boolean isSailing = true;
-                            int[] currentShipsCoordinates = {coordinates[0] , coordinates[1]};
-                            //hits = 0
-                            Ship currentShip = new Ship(shipSize, direction, currentShipsCoordinates, 0, isSailing);
-                            resetShipData();
-                            currentPlayer.getPlayerFleet().set(currentShip);
-                            showAvailableShipButtons();
-                            currentPlayer.getPlayerFleet().printFleet(); //ERROR: prints all coord values as same!!!
-
-                            currentPlayer.printPlanningField();*/
                     }
                 }
             }
@@ -350,6 +327,7 @@ public class BattleWindow extends JFrame {
                                     break;
                                 }
                             }
+                            if(breakout) break;
                         }
                         if(breakout) break;
                     }
@@ -362,15 +340,17 @@ public class BattleWindow extends JFrame {
                     for (int x = mx; x < mx + 1 ; x++) {
                         for (int y = my; y < my + 1; y++) {
                             if (x >= 0 && x < battleFieldSize && y >= 0 && y < battleFieldSize ) {
-                                if (!coordinatesAreAdjacentToShip(new int[]{x, y})) {
-                                    areLegal = true;
+                                if (coordinatesAreAdjacentToShip(new int[]{x, y})) {
+                                    areLegal = false;
                                 } else {
                                     System.out.println("ERIOLUKORD: laev ei sobi merele!");
-                                    areLegal = false;
+                                    areLegal = true;
                                     breakout = true;
                                     break;
                                 }
+
                             }
+                            if(breakout) break;
                         }
                         if(breakout) break;
                     }
@@ -417,44 +397,17 @@ public class BattleWindow extends JFrame {
                             if (coordinatesInBounds(new int[]{x, y})) {
                                 inBounds = true;
 
-                            }
-                            else{
-                                System.out.println("ERIOLUKORD: laev ei sobi merele!");
+                            } else {
+                                System.out.println("Laev ei mahu mänguväljakule.");
                                 inBounds = false;
                                 breakout = true;
                                 break;
                             }
-
+                            if(breakout) break;
                         }
-                        if(breakout) break;
                     }
                 }
                 return inBounds;
-            }
-
-            private void defineAllPartsFit(int[] direct, boolean[] allPartsFit) {
-                for(int d = 0;d < shipSize;d++) {
-
-                    int mx = (d*direct[1])+coordinates[0] - 1;
-                    int my = (d*direct[0])+coordinates[1] - 1;
-                    boolean breakout = false;
-                    for (int x = mx; x < mx + 3 ; x++) {
-                        for (int y = my; y < my + 3; y++) {
-                            if (coordinatesInBounds(new int[]{x, y})) {
-                                allPartsFit[d] = true;
-
-                            }
-                            else{
-                                System.out.println("ERIOLUKORD: laev ei sobi merele!");
-                                allPartsFit[d] = false;
-                                breakout = true;
-                                break;
-                            }
-
-                        }
-                        if(breakout) break;
-                    }
-                }
             }
 
             private void drawShipMap(int[] direct) {
@@ -486,18 +439,6 @@ public class BattleWindow extends JFrame {
                         }
                     }
                 }
-            }
-
-            private boolean isReadyToSail(boolean[] allPartsFit) {
-                boolean readyToSail = false;
-                for (boolean b:allPartsFit) {
-                    if (!b) readyToSail = false;
-
-                    else {
-                        readyToSail = true;
-                    }
-                }
-                return readyToSail;
             }
 
             public void resetShipData(){
