@@ -10,18 +10,14 @@ public class  GamePanel extends JPanel {
     JPanel view1 = new JPanel();
     JPanel view2 = new JPanel();
     JPanel switchboard = new JPanel();
-    JButton fire = new JButton();
-    JLabel target = new JLabel();
-    JLabel score = new JLabel();
+    JButton fire = new JButton("Fire");
+    JLabel target = new JLabel("Target");
+    JLabel score = new JLabel("Score");
     JLabel battleFieldLocations[][] = new JLabel[BattleWindow.battleFieldSize][BattleWindow.battleFieldSize];
     int[] coordinates = {-1, -1};
 
 
     public JLabel[][] createBattleField() {
-
-        //battleField.setPreferredSize(new Dimension(200, 200));
-        //battleField.setLayout(new GridLayout(battleFieldSize,battleFieldSize));
-
         //init JLabels
         for (int x=0;x<BattleWindow.battleFieldSize;x++){
             for (int y=0;y<BattleWindow.battleFieldSize;y++){
@@ -53,6 +49,10 @@ public class  GamePanel extends JPanel {
     }
 
     public void displayGamePanelContents() {
+        view1.setPreferredSize(new Dimension(200, 200));
+        view1.setLayout(new GridLayout(BattleWindow.battleFieldSize,BattleWindow.battleFieldSize));
+        view2.setPreferredSize(new Dimension(200, 200));
+        view2.setLayout(new GridLayout(BattleWindow.battleFieldSize,BattleWindow.battleFieldSize));
         for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
             for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
                 view1.add(battleFieldLocations[x][y]);
@@ -68,6 +68,7 @@ public class  GamePanel extends JPanel {
         switchboard.add(fire);
         switchboard.add(target);
         switchboard.add(score);
+        switchboard.setVisible(true);
         switchboard.repaint();
         add(view1);
         add(view2);
@@ -77,6 +78,7 @@ public class  GamePanel extends JPanel {
     }
 
     public GamePanel() {
+        setLayout(new GridLayout(1, 3));
         createBattleField();
         displayGamePanelContents();
     }
