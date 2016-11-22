@@ -52,6 +52,17 @@ public class Ship {
         }
     }
 
+    public void setAllCoordinates(int[] direct, int size){
+        for (int d = 0; d < size; d++) {
+            int mx = (d * direct[1]) + coordinates[0];
+            int my = (d * direct[0]) + coordinates[1];
+            for (int x = mx; x < mx + 1; x++) {
+                for (int y = my; y < my + 1; y++) {
+
+                }
+            }
+        }
+    }
 
     public void setBattlefieldSize(){
         BattleWindow.getFieldSize();
