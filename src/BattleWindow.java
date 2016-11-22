@@ -13,6 +13,7 @@ public class BattleWindow extends JFrame {
     JPanel setup = new JPanel();
     JPanel planning = new JPanel();
     JPanel battleField = new JPanel();
+    GamePanel gamePanel= new GamePanel();
     JLabel name = new JLabel("Name");
     JTextField nameTextField = new JTextField();
     JLabel fleetSize = new JLabel("Fleet Size");
@@ -35,6 +36,7 @@ public class BattleWindow extends JFrame {
     int shipSize = 0;
     final private int xCoordinate =0;
     final private int yCoordinate =1;
+
 
     public JButton fill = new JButton("Fill");
     public JLabel ship4  = new JLabel("Battleship");
@@ -140,7 +142,7 @@ public class BattleWindow extends JFrame {
         this.setTitle(s);
     }
 
-    public void createBattleField() {
+    public JLabel[][] createBattleField() {
 
         battleField.setPreferredSize(new Dimension(200, 200));
         battleField.setLayout(new GridLayout(battleFieldSize,battleFieldSize));
@@ -179,6 +181,7 @@ public class BattleWindow extends JFrame {
         planning.revalidate();
         this.add(planning);
         this.repaint();
+        return battleFieldLocations;
 
     }
 
@@ -266,9 +269,9 @@ public class BattleWindow extends JFrame {
                         System.out.println("Let the games begin!");
                         remove(planning);
                         remove(switchboard);
+                        add(gamePanel);
                         revalidate();
                         repaint();
-
                     }
 
                 }
@@ -340,19 +343,16 @@ public class BattleWindow extends JFrame {
                     for (int x = mx; x < mx + 1 ; x++) {
                         for (int y = my; y < my + 1; y++) {
                             if (x >= 0 && x < battleFieldSize && y >= 0 && y < battleFieldSize ) {
-                                if (coordinatesAreAdjacentToShip(new int[]{x, y})) {
-                                    areLegal = false;
+                                if (!coordinatesAreAdjacentToShip(new int[]{x, y})) {
+                                    areLegal = true;
                                 } else {
                                     System.out.println("ERIOLUKORD: laev ei sobi merele!");
-                                    areLegal = true;
+                                    areLegal = false;
                                     breakout = true;
-                                    break;
+                                    return areLegal;
                                 }
-
                             }
-                            if(breakout) break;
                         }
-                        if(breakout) break;
                     }
                 }
                 return areLegal;
