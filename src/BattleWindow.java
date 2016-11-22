@@ -286,9 +286,28 @@ public class BattleWindow extends JFrame {
 
                     int[] direct = directionsForAdjency(direction);
                     if (coordinatesInBounds(coordinates)) {
-                        System.out.println("mahub väljakule" + coordinates[0] + "  " + coordinates[1]);
+                        System.out.println("alg koordinaadid on sobilikud merele");
+                        if (allShipCoordinatesInBounds(coordinates, direct)) {
+                            System.out.println("Terve laev mahub väljakule");
+                            if (allShipCoordinatesLegal(coordinates, direct)) {
+                                System.out.println("Kõik laeva koordinaadid on reeglitepärased");
+                                drawShipMap(direct);
+                                drawAdjacentToShipMap(direct);
+                                displayShips();
+                                boolean isSailing = true;
+                                int[] currentShipsCoordinates = {coordinates[0] , coordinates[1]};
+                                //hits = 0
+                                Ship currentShip = new Ship(shipSize, direction, currentShipsCoordinates, 0, isSailing);
+                                resetShipData();
+                                currentPlayer.getPlayerFleet().set(currentShip);
+                                showAvailableShipButtons();
+                                currentPlayer.getPlayerFleet().printFleet(); //ERROR: prints all coord values as same!!!
+                                currentPlayer.printPlanningField();
+                            }
+                        }
+                        /*System.out.println("mahub väljakule" + coordinates[0] + "  " + coordinates[1]);
                         if (coordinatesAreLegal(coordinates)) {//kõiki laeva koordinaate ei kontrolli
-                            System.out.println("alg koordinaadid on sobilikud merele");
+
 
                             boolean[] allPartsFit = new boolean[shipSize];
 
@@ -308,13 +327,109 @@ public class BattleWindow extends JFrame {
                             showAvailableShipButtons();
                             currentPlayer.getPlayerFleet().printFleet(); //ERROR: prints all coord values as same!!!
 
-                            currentPlayer.printPlanningField();
-                        }
-                    } else {
-                        feedback.setText("OUT!");
+                            currentPlayer.printPlanningField();*/
                     }
-
                 }
+            }
+            private boolean allShipCoordinatesLegal(int[] coordinates, int[] direct) {
+                boolean areLegal = true;
+                for(int d = 0;d < shipSize;d++) {
+
+                    int mx = (d*direct[1])+coordinates[0] - 1;
+                    int my = (d*direct[0])+coordinates[1] - 1;
+                    boolean breakout = false;
+                    for (int x = mx; x < mx + 3 ; x++) {
+                        for (int y = my; y < my + 3; y++) {
+                            if (x >= 0 && x < battleFieldSize && y >= 0 && y < battleFieldSize ) {
+                                if (!coordinatesAreShip(new int[]{x, y})) {
+                                    areLegal = true;
+                                } else {
+                                    System.out.println("ERIOLUKORD: laev ei sobi merele!");
+                                    areLegal = false;
+                                    breakout = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(breakout) break;
+                    }
+                }
+                for(int d = 0;d < shipSize;d++) {
+
+                    int mx = (d*direct[1])+coordinates[0];
+                    int my = (d*direct[0])+coordinates[1];
+                    boolean breakout = false;
+                    for (int x = mx; x < mx + 1 ; x++) {
+                        for (int y = my; y < my + 1; y++) {
+                            if (x >= 0 && x < battleFieldSize && y >= 0 && y < battleFieldSize ) {
+                                if (!coordinatesAreAdjacentToShip(new int[]{x, y})) {
+                                    areLegal = true;
+                                } else {
+                                    System.out.println("ERIOLUKORD: laev ei sobi merele!");
+                                    areLegal = false;
+                                    breakout = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(breakout) break;
+                    }
+                }
+                return areLegal;
+            }
+            private boolean coordinatesAreShip(int[] coordinates){
+                boolean legal = false;
+
+                if(currentPlayer.planningfield[coordinates[0]][coordinates[1]] == SeaConstants.SHIP){
+                    legal = true;
+                }
+                else{
+                    //sea or adjacent to ship
+                    legal = false;
+                }
+
+                return legal;
+            }
+            private boolean coordinatesAreAdjacentToShip(int[] coordinates){
+                boolean legal = false;
+
+                if(currentPlayer.planningfield[coordinates[0]][coordinates[1]] == SeaConstants.ADJACENT_TO_SHIP){
+                    legal = true;
+                }
+                else{
+                    //sea or adjacent to ship
+                    legal = false;
+                }
+
+                return legal;
+            }
+
+
+            private boolean allShipCoordinatesInBounds(int[] coordinates, int[] direct) {
+                boolean inBounds = true;
+                for(int d = 0;d < shipSize;d++) {
+
+                    int mx = (d*direct[1])+coordinates[0];
+                    int my = (d*direct[0])+coordinates[1];
+                    boolean breakout = false;
+                    for (int x = mx; x < mx + 1 ; x++) {
+                        for (int y = my; y < my + 1; y++) {
+                            if (coordinatesInBounds(new int[]{x, y})) {
+                                inBounds = true;
+
+                            }
+                            else{
+                                System.out.println("ERIOLUKORD: laev ei sobi merele!");
+                                inBounds = false;
+                                breakout = true;
+                                break;
+                            }
+
+                        }
+                        if(breakout) break;
+                    }
+                }
+                return inBounds;
             }
 
             private void defineAllPartsFit(int[] direct, boolean[] allPartsFit) {
@@ -359,16 +474,14 @@ public class BattleWindow extends JFrame {
 
             private void drawAdjacentToShipMap(int[] direct) {
                 for (int d = 0; d < shipSize; d++) {
-                    int mx = (d * direct[1]) + coordinates[0];
-                    int my = (d * direct[0]) + coordinates[1];
-                    for (int x = mx; x < mx + 1; x++) {
-                        for (int y = my; y < my + 1; y++) {
-                            if (coordinatesInBounds(new int[]{x, y}) &&
-                                    coordinatesAreLegal(new int[]{x, y})) {
-                                currentPlayer.planningfield[x][y] = SeaConstants.ADJACENT_TO_SHIP;
-                            }
-                            else{
-                                System.out.println("ERIOLUKORD: ei joonista 2 planningfieldi");
+                    int mx = (d * direct[1]) + coordinates[0] - 1;
+                    int my = (d * direct[0]) + coordinates[1] - 1;
+                    for (int x = mx; x < mx + 3; x++) {
+                        for (int y = my; y < my + 3; y++) {
+                            if (x >= 0 && x < battleFieldSize && y >= 0 && y < battleFieldSize ) {
+                                if (currentPlayer.planningfield[x][y] != SeaConstants.SHIP) {
+                                    currentPlayer.planningfield[x][y] = SeaConstants.ADJACENT_TO_SHIP;
+                                }
                             }
                         }
                     }
@@ -400,7 +513,7 @@ public class BattleWindow extends JFrame {
             public boolean coordinatesAreLegal(int[] coordinates){
                 boolean legal = false;
 
-                if(currentPlayer.planningfield[coordinates[0]][coordinates[1]]==SeaConstants.SEA){
+                if(currentPlayer.planningfield[coordinates[0]][coordinates[1]] == SeaConstants.SEA){
                     legal = true;
                 }
                 else{
