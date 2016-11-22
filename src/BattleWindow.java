@@ -357,6 +357,7 @@ public class BattleWindow extends JFrame {
                             else{
                                 System.out.println("ERIOLUKORD: ei joonista 1 laeva märgiks planningfieldi");
                             }*/
+                            System.out.println("ERI drawSHIPMAP: x" + x+ "y"+y);
                             currentPlayer.planningfield[x][y] = SeaConstants.SHIP;
                         }
                     }
