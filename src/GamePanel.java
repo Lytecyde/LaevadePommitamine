@@ -70,7 +70,7 @@ public class  GamePanel extends JPanel {
 
     public void displayGamePanelContents() {
         views.setPreferredSize(new Dimension(400,200));
-        views.setLayout(new GridLayout(1,2));
+        views.setLayout(new GridLayout(1,2,10,10));
         view1.setPreferredSize(new Dimension(200, 200));
         view1.setLayout(new GridLayout(BattleWindow.battleFieldSize,BattleWindow.battleFieldSize));
         view2.setPreferredSize(new Dimension(200, 200));
@@ -132,91 +132,88 @@ public class  GamePanel extends JPanel {
     ActionListener fireListener = new ActionListener(){
         public void actionPerformed(ActionEvent e) {
 
-
-            if(BattleWindow.currentPlayer.name.equals(BattleWindow.player1.name) && turnOfPlayer ==SECOND) {
-                burningShip.setOpaque(true);
-                if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 1) {
-                    target.setText("HIT!");
-                    BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] = 3;
-                    //laevastikust saab laev viga
-                    //battlefield märgitakse ära
+            if(coordinates[0] >= 0) {
+                if (BattleWindow.currentPlayer.name.equals(BattleWindow.player1.name) && turnOfPlayer == SECOND) {
                     burningShip.setOpaque(true);
-                    burningShip.setBackground(Color.RED);
-                    burningShip.setPreferredSize(new Dimension(20,20));
-                    battleFieldLabels2[coordinates[0]][coordinates[1]] = burningShip;
-                }
-                else if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 0) {
-                    target.setText("MISS!");
+                    if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 1) {
+                        target.setText("HIT!");
+                        BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] = 3;
+                        //laevastikust saab laev viga
+                        //battlefield märgitakse ära
 
-                }
-                else if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 2) {
-                    target.setText("MISS!");
+                    } else if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 0) {
+                        target.setText("MISS!");
 
-                }
-            }
+                    } else if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 2) {
+                        target.setText("MISS!");
 
-            else if(BattleWindow.currentPlayer.name.equals(BattleWindow.player2.name) && turnOfPlayer ==FIRST){
-                if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 1) {
-                    target.setText("HIT!");
-                    BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] = 3;
-                    //laevastikust saab laev viga
-                    //battlefield märgitakse ära
+                    }
+                } else if (BattleWindow.currentPlayer.name.equals(BattleWindow.player2.name) && turnOfPlayer == FIRST) {
+
+                    if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 1) {
+                        target.setText("HIT!");
+                        BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] = 3;
+                        //laevastikust saab laev viga
+                        //battlefield märgitakse ära
 //                    burningShip.setOpaque(true);
 //                    burningShip.setBackground(Color.RED);
 //                    burningShip.setPreferredSize(new Dimension(20,20));
 //                    battleFieldLabels1[coordinates[0]][coordinates[1]] = burningShip;
-                }
-                else if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 0) {
-                    target.setText("MISS!");
+                    } else if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 0) {
+                        target.setText("MISS!");
 
-                }
-                else if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 2) {
-                    target.setText("MISS!");
+                    } else if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 2) {
+                        target.setText("MISS!");
 
+                    }
+                }//
+                else {
+                    System.out.println("Wrong Table!");
                 }
-            }//
-            else {
-                System.out.println("Wrong Table!");
+            }else{
+                System.out.println("Missed correct target!");
             }
             view1.removeAll();
             view2.removeAll();
+
             //displayGamePanelContents();
             view1.setPreferredSize(new Dimension(200, 200));
             view1.setLayout(new GridLayout(BattleWindow.battleFieldSize,BattleWindow.battleFieldSize));
             view2.setPreferredSize(new Dimension(200, 200));
             view2.setLayout(new GridLayout(BattleWindow.battleFieldSize,BattleWindow.battleFieldSize));
             views.setLayout(new GridLayout(1,2));
+            //battleFieldLabels1 = redisplayBattleView(BattleWindow.player1.getPlanningfield());
+            //showView(battleFieldLabels1);
+            //battleFieldLabels2 = redisplayBattleView(BattleWindow.player2.getPlanningfield());
+            //showView(battleFieldLabels2);
+
+
+            battleFieldLabels1 = new JLabel[BattleWindow.battleFieldSize][BattleWindow.battleFieldSize];
+            battleFieldLabels2 = new JLabel[BattleWindow.battleFieldSize][BattleWindow.battleFieldSize];
             battleFieldLabels1 = redisplayBattleView(BattleWindow.player1.getPlanningfield());
-            showView(battleFieldLabels1);
+            showView(battleFieldLabels1, view1);
             battleFieldLabels2 = redisplayBattleView(BattleWindow.player2.getPlanningfield());
-            showView(battleFieldLabels2);
-            views.add(view1);
+            showView(battleFieldLabels2, view2);
+            views.setLayout(new GridLayout(1,2,10,10));
             views.add(view2);
+            views.add(view1);
             views.revalidate();
             views.repaint();
-
             BattleWindow.gameTurn++;
             System.out.println(BattleWindow.gameTurn);
             turnOfPlayer = !turnOfPlayer;
         }
     };
 
-    public void showView(JLabel[][] currentLabels){
-        if(BattleWindow.currentPlayer.name.equals(BattleWindow.player1.name)) {
+    public void showView(JLabel[][] currentLabels, JPanel view){
+
             for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
                 for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
-                    view2.add(currentLabels[x][y]);
+                    view.add(currentLabels[x][y]);
                 }
             }
-        }else if (BattleWindow.currentPlayer.name.equals(BattleWindow.player2.name)){
-            for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
-                for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
-                    view1.add(currentLabels[x][y]);
-                }
-            }
-        }else{
-            System.out.println("ERI showview");
-        }
+
+
 
     }
 
