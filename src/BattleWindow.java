@@ -30,14 +30,15 @@ public class BattleWindow extends JFrame {
     int counterOk = 0;
     private int direction = -1;
     private int[] coordinates = {-1,-1};
-    private Player player1;
-    private Player player2;
-    private Player currentPlayer;
+    public static Player player1;
+    public static Player player2;
+    public static Player currentPlayer;
     int shipSize = 0;
     final private int xCoordinate =0;
     final private int yCoordinate =1;
 
-
+    public static int gameTurn = 0;
+    public static String title = "";
     public JButton fill = new JButton("Fill");
     public JLabel ship4  = new JLabel("Battleship");
     public JButton ship4Button = new JButton("####");
@@ -138,9 +139,12 @@ public class BattleWindow extends JFrame {
         this.add(setup);
     }
 
-    public void setFrameName(String s){
+    public  void setFrameName(String s){
         this.setTitle(s);
     }
+
+
+
 
     public JLabel[][] createBattleField() {
 
@@ -259,7 +263,7 @@ public class BattleWindow extends JFrame {
                     ////////////////////////////////////////////////////////////////////////
                     if(currentPlayer == player1){
                         currentPlayer = player2;
-                        setFrameName("Laevadepommitamine: " + currentPlayer.name);
+                        setFrameName("Laevadepommitamine: " + currentPlayer.name );
                         //reset shipbuttons
                         resetShipButtons();
                         battleField.removeAll();

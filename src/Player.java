@@ -15,6 +15,9 @@ public class Player {
         }
     }
 
+    public int[][] getPlanningfield(){
+        return planningfield;
+    }
     public void createPlanningField(){
         for (int x=0;x<battleFieldSize;x++) {
             for (int y = 0; y < battleFieldSize; y++) {
