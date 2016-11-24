@@ -74,8 +74,6 @@ public class  GamePanel extends JPanel {
                 view2.add(bfl2[x][y]);
             }
         }
-
-
         switchboard.add(fire);
         switchboard.add(target);
         switchboard.add(score);
