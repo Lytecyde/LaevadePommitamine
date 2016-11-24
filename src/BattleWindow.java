@@ -270,6 +270,7 @@ public class BattleWindow extends JFrame {
                         remove(planning);
                         remove(switchboard);
                         add(gamePanel);
+                        pack();
                         revalidate();
                         repaint();
                     }

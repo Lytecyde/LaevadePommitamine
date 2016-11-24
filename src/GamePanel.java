@@ -9,15 +9,18 @@ import java.awt.event.MouseEvent;
 public class  GamePanel extends JPanel {
     JPanel view1 = new JPanel();
     JPanel view2 = new JPanel();
+    JPanel views = new JPanel();
     JPanel switchboard = new JPanel();
     JButton fire = new JButton("Fire");
     JLabel target = new JLabel("Target");
     JLabel score = new JLabel("Score");
-    JLabel battleFieldLocations[][] = new JLabel[BattleWindow.battleFieldSize][BattleWindow.battleFieldSize];
+    JLabel[][] bfl1;
+    JLabel[][] bfl2;
     int[] coordinates = {-1, -1};
 
 
     public JLabel[][] createBattleField() {
+        JLabel battleFieldLocations[][] = new JLabel[BattleWindow.battleFieldSize][BattleWindow.battleFieldSize];
         //init JLabels
         for (int x=0;x<BattleWindow.battleFieldSize;x++){
             for (int y=0;y<BattleWindow.battleFieldSize;y++){
@@ -49,36 +52,47 @@ public class  GamePanel extends JPanel {
     }
 
     public void displayGamePanelContents() {
+        views.setPreferredSize(new Dimension(400,200));
+        views.setLayout(new GridLayout(1,2));
         view1.setPreferredSize(new Dimension(200, 200));
+        view1.setOpaque(true);
         view1.setLayout(new GridLayout(BattleWindow.battleFieldSize,BattleWindow.battleFieldSize));
         view2.setPreferredSize(new Dimension(200, 200));
         view2.setLayout(new GridLayout(BattleWindow.battleFieldSize,BattleWindow.battleFieldSize));
+        view2.setOpaque(true);
+        view1.setLocation(0,0);
+        view2.setLocation(200,0);
         for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
             for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
-                view1.add(battleFieldLocations[x][y]);
-                view2.add(battleFieldLocations[x][y]);
+                bfl1 = createBattleField();
+                bfl2 = createBattleField();
             }
         }
-        view1.setVisible(true);
-        view2.setVisible(true);
-        view1.revalidate();
-        view2.revalidate();
-        view1.repaint();
-        view2.repaint();
+        for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
+            for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
+                view1.add(bfl1[x][y]);
+                view2.add(bfl2[x][y]);
+            }
+        }
+
+
         switchboard.add(fire);
         switchboard.add(target);
         switchboard.add(score);
         switchboard.setVisible(true);
         switchboard.repaint();
-        add(view1);
-        add(view2);
+        views.add(view1);
+        views.add(view2);
+        views.setVisible(true);
+        views.repaint();
+        add(views);
         add(switchboard);
         revalidate();
         repaint();
     }
 
     public GamePanel() {
-        setLayout(new GridLayout(1, 3));
+        setLayout(new FlowLayout());
         createBattleField();
         displayGamePanelContents();
     }
