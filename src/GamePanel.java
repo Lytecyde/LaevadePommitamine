@@ -27,6 +27,7 @@ public class  GamePanel extends JPanel {
     int gameTurn =0;
 
     public GamePanel() {
+        BattleWindow.currentPlayer = BattleWindow.player1;
         setLayout(new FlowLayout());
         createBattleField();
         createBattleFieldSea();
@@ -79,19 +80,7 @@ public class  GamePanel extends JPanel {
         //create all the labels for battlefield view1 and view2
 
         //add mouse listener to each label
-        for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
-            for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
-                battleFieldLabels1[x][y].addMouseListener(
-                        new MouseAdapter() {
-                            public void mouseClicked(MouseEvent e) {
-                                target.setText(BattleWindow.player1.name+":x:" +coordinates[0]+"y:"+coordinates[1] );}});
-                battleFieldLabels2[x][y].addMouseListener(
-                        new MouseAdapter() {
-                            public void mouseClicked(MouseEvent e) {
-                                target.setText(BattleWindow.player2.name+"x:" +coordinates[0]+"y:"+coordinates[1] );}});
-            }
-
-        }
+        addCoordinateShowToAllLabels();
 
 
         //add all battlefield labels to view1 and view2
@@ -109,6 +98,8 @@ public class  GamePanel extends JPanel {
         switchboard.add(score);
         switchboard.setVisible(true);
         switchboard.repaint();
+        view2.setBorder(BorderFactory.createLineBorder(Color.gray));
+        view1.setBorder(BorderFactory.createLineBorder(Color.red));
         views.add(view1);
         views.add(view2);
         views.setVisible(true);
@@ -117,6 +108,22 @@ public class  GamePanel extends JPanel {
         add(switchboard);
         revalidate();
         repaint();
+    }
+
+    private void addCoordinateShowToAllLabels() {
+        for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
+            for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
+                battleFieldLabels1[x][y].addMouseListener(
+                        new MouseAdapter() {
+                            public void mouseClicked(MouseEvent e) {
+                                target.setText(BattleWindow.player1.name+":x:" +coordinates[0]+"y:"+coordinates[1] );}});
+                battleFieldLabels2[x][y].addMouseListener(
+                        new MouseAdapter() {
+                            public void mouseClicked(MouseEvent e) {
+                                target.setText(BattleWindow.player2.name+"x:" +coordinates[0]+"y:"+coordinates[1] );}});
+            }
+
+        }
     }
 
     private void createBattleFieldSea() {
@@ -133,7 +140,7 @@ public class  GamePanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
 
             if(coordinates[0] >= 0) {
-                if (BattleWindow.currentPlayer.name.equals(BattleWindow.player1.name) && turnOfPlayer == SECOND) {
+                if (BattleWindow.currentPlayer.name.equals(BattleWindow.player1.name) && turnOfPlayer == FIRST) {
                     burningShip.setOpaque(true);
                     if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 1) {
                         target.setText("HIT!");
@@ -147,8 +154,12 @@ public class  GamePanel extends JPanel {
                     } else if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 2) {
                         target.setText("MISS!");
 
+                    }else{
+
                     }
-                } else if (BattleWindow.currentPlayer.name.equals(BattleWindow.player2.name) && turnOfPlayer == FIRST) {
+                    view1.setBorder(BorderFactory.createLineBorder(Color.gray));
+                    view2.setBorder(BorderFactory.createLineBorder(Color.red));
+                } else if (BattleWindow.currentPlayer.name.equals(BattleWindow.player2.name) && turnOfPlayer == SECOND) {
 
                     if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 1) {
                         target.setText("HIT!");
@@ -166,6 +177,11 @@ public class  GamePanel extends JPanel {
                         target.setText("MISS!");
 
                     }
+                    else{
+
+                    }
+                    view2.setBorder(BorderFactory.createLineBorder(Color.gray));
+                    view1.setBorder(BorderFactory.createLineBorder(Color.red));
                 }//
                 else {
                     System.out.println("Wrong Table!");
@@ -190,32 +206,50 @@ public class  GamePanel extends JPanel {
 
             battleFieldLabels1 = new JLabel[BattleWindow.battleFieldSize][BattleWindow.battleFieldSize];
             battleFieldLabels2 = new JLabel[BattleWindow.battleFieldSize][BattleWindow.battleFieldSize];
+
+            printPlanningField(BattleWindow.player1.getPlanningfield());
             battleFieldLabels1 = redisplayBattleView(BattleWindow.player1.getPlanningfield());
             showView(battleFieldLabels1, view1);
             battleFieldLabels2 = redisplayBattleView(BattleWindow.player2.getPlanningfield());
             showView(battleFieldLabels2, view2);
+            addCoordinateShowToAllLabels();
             views.setLayout(new GridLayout(1,2,10,10));
+
             views.add(view2);
             views.add(view1);
             views.revalidate();
             views.repaint();
+            //BattleWindow data changes
             BattleWindow.gameTurn++;
+            if(turnOfPlayer){
+                BattleWindow.currentPlayer = BattleWindow.player1;
+            }else{
+                BattleWindow.currentPlayer = BattleWindow.player2;
+            }
             System.out.println(BattleWindow.gameTurn);
             turnOfPlayer = !turnOfPlayer;
+            ((JButton)e.getSource()).setText(BattleWindow.currentPlayer.name+": Fire!");
         }
     };
 
     public void showView(JLabel[][] currentLabels, JPanel view){
 
-            for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
-                for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
-                    view.add(currentLabels[x][y]);
-                }
+        for (int x = 0; x < BattleWindow.battleFieldSize; x++) {
+            for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
+                view.add(currentLabels[x][y]);
             }
-
-
-
+        }
     }
+
+    public void printPlanningField(int[][] planningfield){
+        for (int x=0;x<BattleWindow.battleFieldSize;x++) {
+            for (int y = 0; y < BattleWindow.battleFieldSize; y++) {
+                System.out.print(planningfield[x][y]);
+            }
+            System.out.println();
+        }
+    }
+
 
     public JLabel[][] redisplayBattleView(int[][] planningField){
         JLabel battleFieldLocations[][] = new JLabel[BattleWindow.battleFieldSize][BattleWindow.battleFieldSize];
