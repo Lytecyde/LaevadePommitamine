@@ -7,8 +7,8 @@ public class Fleet {
                     //TODO all false muidu true ajutiselt
     static public boolean[] noShipsLeft = {false, false, false, false}; //sizes 1,2,3,4
     LinkedList<Ship> ships;
-
-
+    public boolean fleetDestroyed = false;
+    public int fleetHitPoints = 0;
     public Fleet() {
         ships = new LinkedList<>();
         //vaike versioon 20 punktiga
@@ -26,7 +26,10 @@ public class Fleet {
 
         ships.add(new Ship(4));
 
+        fleetHitPoints = 20;
     }
+
+
 
     private void add(Ship s) {
         ships.add(s);
@@ -120,7 +123,7 @@ public class Fleet {
         int i = 0;
         for (Ship s : this.ships) {
             System.out.println("Laev" + i + " size:" + s.size + " direction" + s.heading + " coord" + s.coordinates[0] + "  " + s.coordinates[1] + " hits" + s.hits
-                    + " sailing" + s.sailing);
+                    + " sailing" + s.sailing + " sunk" + s.sailing + " hits" + s.hits);
         }
     }
 

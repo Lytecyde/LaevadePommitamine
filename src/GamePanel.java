@@ -13,14 +13,14 @@ public class  GamePanel extends JPanel {
     JPanel view2 = new JPanel();
     JPanel views = new JPanel();
     JPanel switchboard = new JPanel();
-    JButton fire = new JButton("Fire");
+    JButton fire = new JButton("Fire!");
     JLabel target = new JLabel("Target");
     JLabel score = new JLabel("Score");
     JLabel[][] battleFieldLabels1;
     JLabel[][] battleFieldLabels2;
-    JLabel[][] currentLabels;
+
     int[] coordinates = {-1, -1};
-    JLabel burningShip = new JLabel();
+
     final boolean FIRST = false;
     final boolean SECOND = true;
     boolean turnOfPlayer = FIRST;
@@ -28,6 +28,7 @@ public class  GamePanel extends JPanel {
 
     public GamePanel() {
         BattleWindow.currentPlayer = BattleWindow.player1;
+        System.out.println("player1 name:" + BattleWindow.player1.name);
         setLayout(new FlowLayout());
         createBattleField();
         createBattleFieldSea();
@@ -70,6 +71,7 @@ public class  GamePanel extends JPanel {
     }
 
     public void displayGamePanelContents() {
+
         views.setPreferredSize(new Dimension(400,200));
         views.setLayout(new GridLayout(1,2,10,10));
         view1.setPreferredSize(new Dimension(200, 200));
@@ -140,11 +142,13 @@ public class  GamePanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
 
             if(coordinates[0] >= 0) {
+                System.out.println(BattleWindow.currentPlayer.name+"p"+BattleWindow.player1.name + " first:"+turnOfPlayer);
                 if (BattleWindow.currentPlayer.name.equals(BattleWindow.player1.name) && turnOfPlayer == FIRST) {
-                    burningShip.setOpaque(true);
+
                     if (BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] == 1) {
                         target.setText("HIT!");
                         BattleWindow.player1.planningfield[coordinates[0]][coordinates[1]] = 3;
+                        if(isSunk(coordinates[0], coordinates[1]))target.setText("SUNK!");
                         //laevastikust saab laev viga
                         //battlefield märgitakse ära
 
@@ -161,19 +165,18 @@ public class  GamePanel extends JPanel {
                     view2.setBorder(BorderFactory.createLineBorder(Color.red));
                 } else if (BattleWindow.currentPlayer.name.equals(BattleWindow.player2.name) && turnOfPlayer == SECOND) {
 
-                    if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 1) {
+                    if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == SeaConstants.SHIP) {
                         target.setText("HIT!");
-                        BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] = 3;
-                        //laevastikust saab laev viga
                         //battlefield märgitakse ära
-//                    burningShip.setOpaque(true);
-//                    burningShip.setBackground(Color.RED);
-//                    burningShip.setPreferredSize(new Dimension(20,20));
-//                    battleFieldLabels1[coordinates[0]][coordinates[1]] = burningShip;
-                    } else if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 0) {
+                        BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] = SeaConstants.SHIP_AFLAME;
+                        if(isSunk(coordinates[0], coordinates[1]))target.setText("SUNK!");
+                        //laevastikust läheb laev ehk põhja
+
+
+                    } else if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == SeaConstants.SEA) {
                         target.setText("MISS!");
 
-                    } else if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == 2) {
+                    } else if (BattleWindow.player2.planningfield[coordinates[0]][coordinates[1]] == SeaConstants.ADJACENT_TO_SHIP) {
                         target.setText("MISS!");
 
                     }
@@ -215,8 +218,8 @@ public class  GamePanel extends JPanel {
             addCoordinateShowToAllLabels();
             views.setLayout(new GridLayout(1,2,10,10));
 
-            views.add(view2);
             views.add(view1);
+            views.add(view2);
             views.revalidate();
             views.repaint();
             //BattleWindow data changes
@@ -338,5 +341,38 @@ public class  GamePanel extends JPanel {
         }
         return battleFieldLocations;
     }
+    public void scoring(String s){
 
+        score.setText(s);
+    }
+
+    public boolean isSunk(int x, int y){
+        //find ship with coordinates x,y
+        boolean sunk = false;
+        boolean breakout = false;
+        int indexOfShip = 0;
+        for(Ship s: BattleWindow.currentPlayer.getPlayerFleet().ships){
+            System.out.println("NOF ships"+BattleWindow.currentPlayer.getPlayerFleet().ships.size());
+            for (int n = 0; n < s.size; n++) {
+                if(s.allCoordinates != null) {
+                    //System.out.println("size" + s.size + "allCoordinates of this ship x" + s.allCoordinates[0][n] + " " + s.allCoordinates[1][n]);// +" y" +s.allCoordinates[1][n]
+                    if (s.allCoordinates[0][n] == x && s.allCoordinates[1][n] == y) {
+                        s.incrementHits();
+                        System.out.println("hits" + s.hits);
+                        sunk = true;
+                        scoring("P1:"+BattleWindow.player1.getPlayerFleet().fleetHitPoints+"P2:"
+                                +BattleWindow.player2.getPlayerFleet().fleetHitPoints);
+                        breakout = true;
+                    }
+                    if (breakout) break;
+                }    else{
+                    System.out.println(indexOfShip+"KARJUB NPE");//TODO: lahendus???
+                }
+            }
+            if(breakout)break;
+            indexOfShip++;
+        }
+
+        return sunk;
+    }
 }

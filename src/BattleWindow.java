@@ -13,7 +13,7 @@ public class BattleWindow extends JFrame {
     JPanel setup = new JPanel();
     JPanel planning = new JPanel();
     JPanel battleField = new JPanel();
-    GamePanel gamePanel= new GamePanel();
+    GamePanel gamePanel;
     JLabel name = new JLabel("Name");
     JTextField nameTextField = new JTextField();
     JLabel fleetSize = new JLabel("Fleet Size");
@@ -263,7 +263,6 @@ public class BattleWindow extends JFrame {
                     ////////////////////////////////////////////////////////////////////////
                     if(currentPlayer == player1){
                         currentPlayer = player2;
-                        setFrameName("Laevadepommitamine: " + currentPlayer.name );
                         //reset shipbuttons
                         resetShipButtons();
                         battleField.removeAll();
@@ -273,6 +272,7 @@ public class BattleWindow extends JFrame {
                         System.out.println("Let the games begin!");
                         remove(planning);
                         remove(switchboard);
+                        gamePanel=  new GamePanel();
                         add(gamePanel);
                         pack();
                         revalidate();
@@ -307,7 +307,7 @@ public class BattleWindow extends JFrame {
                                 //hits = 0
                                 Ship currentShip = new Ship(shipSize, direction, currentShipsCoordinates, 0, isSailing);
                                 resetShipData();
-                                currentPlayer.getPlayerFleet().set(currentShip);
+                                currentPlayer.getPlayerFleet().set(currentShip);//save ship to fleet
                                 showAvailableShipButtons();
                                 currentPlayer.getPlayerFleet().printFleet(); //ERROR: prints all coord values as same!!!
                                 currentPlayer.printPlanningField();
@@ -487,6 +487,15 @@ public class BattleWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 currentPlayer.createPlanningField();
+                int [] coordinates = new int[2];
+                int shipSize =0;
+                for(int j= 0;j<currentPlayer.getPlayerFleet().ships.size();j++){
+                    coordinates[0] =  SeaConstants.DEFAULTCOORDINATES[j][0];
+                    coordinates[1] =  SeaConstants.DEFAULTCOORDINATES[j][1];
+                    shipSize = SeaConstants.DEFAULTSIZES[j];
+                    Ship currentShip = new Ship(shipSize, 1, coordinates, 0, false);
+                    currentPlayer.getPlayerFleet().set(currentShip);//save ship to fleet
+                }
                 displayShips();
                 //set all ships to sail automatically
                 for (int i = 0; i < currentPlayer.getPlayerFleet().ships.size(); i++) {
@@ -557,7 +566,7 @@ public class BattleWindow extends JFrame {
 
         return false;
     }
-    public int[] directionsForAdjency(int direction){
+    public static int[] directionsForAdjency(int direction){
         int[] direct = new int[2];
         if (direction == 0){// north
             direct[0] =0; //x
