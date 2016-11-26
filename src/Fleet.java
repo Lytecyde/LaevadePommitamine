@@ -108,7 +108,7 @@ public class Fleet {
 
     public int totalPoints() {
         //TODO adjust this function for other fleetsizes !
-        return findShipsBySize(1) * 4 + findShipsBySize(2) * 3 + findShipsBySize(3) * 2 + findShipsBySize(4) * 1;
+        return findShipsBySize(1) * 1 + findShipsBySize(2) * 2 + findShipsBySize(3) * 3 + findShipsBySize(4) * 4;
     }
 
     public int size() {
