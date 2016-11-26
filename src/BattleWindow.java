@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Random;
 
 public class BattleWindow extends JFrame {
 
@@ -36,6 +37,8 @@ public class BattleWindow extends JFrame {
     int shipSize = 0;
     final private int xCoordinate =0;
     final private int yCoordinate =1;
+    private boolean aiCoordinatesCorrect = false;
+    Random rand = new Random();
 
 
     public JButton fill = new JButton("Fill");
@@ -265,7 +268,24 @@ public class BattleWindow extends JFrame {
                         battleField.removeAll();
                         createBattleField();
                         planning.setVisible(true);
-                    }else{
+                        for (int x = 1; x < 5; x++) {
+                            for (int y = 0; y < 5-x; y++) {
+                                shipSize = x;
+                                direction = rand.nextInt(4-0);
+                                coordinates[0] = rand.nextInt((9 - 0) + 1);
+                                coordinates[1] = rand.nextInt((9 - 0) + 1);
+                                checkAndDisplayShipLocation();
+                                while (!aiCoordinatesCorrect) {
+                                    direction = rand.nextInt(4-0);
+                                    coordinates[0] = rand.nextInt((9 - 0) + 1);
+                                    coordinates[1] = rand.nextInt((9 - 0) + 1);
+                                    checkAndDisplayShipLocation();
+                                }
+                            }
+
+                        }
+                    }
+                    else {
                         currentPlayer = player1;
                         System.out.println("Let the games begin!");
                         remove(planning);
@@ -308,9 +328,22 @@ public class BattleWindow extends JFrame {
                                 showAvailableShipButtons();
                                 currentPlayer.getPlayerFleet().printFleet(); //ERROR: prints all coord values as same!!!
                                 currentPlayer.printPlanningField();
+                                aiCoordinatesCorrect = true;
+                            }
+                            else {
+                                aiCoordinatesCorrect = false;
                             }
                         }
+                        else {
+                            aiCoordinatesCorrect = false;
+                        }
                     }
+                    else {
+                        aiCoordinatesCorrect = false;
+                    }
+                }
+                else {
+                    aiCoordinatesCorrect = false;
                 }
             }
             private boolean allShipCoordinatesLegal(int[] coordinates, int[] direct) {
